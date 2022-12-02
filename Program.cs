@@ -1,4 +1,6 @@
-﻿public static class Program
+﻿using ConsoleTerminal.Terminal;
+
+public static class Program
 {
     public static void Log(string text)
     {
@@ -7,7 +9,8 @@
 
     public static void Main(string[] args)
     {
-        Thread thread = new Thread(() =>
+        new TerminalConsole().Start().Wait();
+        /*Thread thread = new Thread(() =>
         {
             while (true)
             {
@@ -18,6 +21,6 @@
         while (true)
         {
             Console.ReadKey();
-        }
+        }*/
     }
 }
