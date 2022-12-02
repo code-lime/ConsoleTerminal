@@ -7,4 +7,20 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Compile Remove="Info\CommandModule.cs" />
+    <Compile Remove="Info\ConsoleInput.cs" />
+    <Compile Remove="Info\ConsoleWindow.cs" />
+    <Compile Remove="Info\DefaultCommands.cs" />
+    <Compile Remove="Info\ServerConsole.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="Info\CommandModule.cs" />
+    <None Include="Info\ConsoleInput.cs" />
+    <None Include="Info\ConsoleWindow.cs" />
+    <None Include="Info\DefaultCommands.cs" />
+    <None Include="Info\ServerConsole.cs" />
+  </ItemGroup>
+
 </Project>
