@@ -23,8 +23,4 @@
     <None Include="Info\ServerConsole.cs" />
   </ItemGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Spectre.Console.Cli" Version="0.45.1-preview.0.45" />
-  </ItemGroup>
-
 </Project>

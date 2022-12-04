@@ -1,26 +1,57 @@
-﻿using ConsoleTerminal.Terminal;
+﻿using Terminal;
+using Terminal.Command;
 
 public static class Program
 {
-    public static void Log(string text)
+    public class SimpleCommand : ICommand
     {
+        public string Name { get; }
+        public SimpleCommand(string name)
+        {
+            this.Name = name;
+        }
 
+
+        public IEnumerable<string> GetTab(string argLine, out int index)
+        {
+            throw new NotImplementedException();
+        }
     }
 
     public static void Main(string[] args)
     {
-        new TerminalConsole().Start().Wait();
-        /*Thread thread = new Thread(() =>
+        TerminalConsole terminal = new TabTerminalConsole(new ICommand[]
+        {
+            new SimpleCommand("tp"),
+            new SimpleCommand("save"),
+            new SimpleCommand("load"),
+            new SimpleCommand("load.all"),
+            new SimpleCommand("load.any1"),
+            new SimpleCommand("load.an2y"),
+            new SimpleCommand("load.an3y"),
+            new SimpleCommand("load.any4")
+        });
+        /*terminal.WriteMessage(new TerminalMessage(ConsoleColor.Yellow, "WARN", "Current tick: " + System.DateTime.Now.Ticks));
+        terminal.WriteMessage(new TerminalMessage(ConsoleColor.Yellow, "WARN", "Current tick: " + System.DateTime.Now.Ticks));
+        terminal.WriteMessage(new TerminalMessage(ConsoleColor.Yellow, "WARN", "Current tick: " + System.DateTime.Now.Ticks));
+        terminal.WriteMessage(new TerminalMessage(ConsoleColor.Yellow, "WARN", "Current tick: " + System.DateTime.Now.Ticks));
+        terminal.WriteMessage(new TerminalMessage(ConsoleColor.Yellow, "WARN", "Current tick: " + System.DateTime.Now.Ticks));
+        terminal.WriteMessage(new TerminalMessage(ConsoleColor.Yellow, "WARN", "Current tick: " + System.DateTime.Now.Ticks));
+        terminal.WriteMessage(new TerminalMessage(ConsoleColor.Yellow, "WARN", "Current tick: " + System.DateTime.Now.Ticks));
+        terminal.WriteMessage(new TerminalMessage(ConsoleColor.Yellow, "WARN", "Current tick: " + System.DateTime.Now.Ticks));
+        terminal.WriteMessage(new TerminalMessage(ConsoleColor.Yellow, "WARN", "Current tick: " + System.DateTime.Now.Ticks));
+        terminal.WriteMessage(new TerminalMessage(ConsoleColor.Yellow, "WARN", "Current tick: " + System.DateTime.Now.Ticks));*/
+        new Thread(() =>
         {
             while (true)
             {
-                Log("Current tick: " + System.DateTime.Now.Ticks);
+                terminal.WriteMessage(new TerminalMessage(ConsoleColor.Yellow, "WARN", "Current tick: " + System.DateTime.Now.Ticks));
                 Thread.Sleep(100);
             }
-        });
-        while (true)
+        })
         {
-            Console.ReadKey();
-        }*/
+            IsBackground = true
+        }.Start();
+        terminal.Start().Wait();
     }
 }
