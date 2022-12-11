@@ -20,6 +20,7 @@ public static class Program
 
     public static void Main(string[] args)
     {
+        Console.Write(new string('\n', 9000));
         TerminalConsole terminal = new TabTerminalConsole(new ICommand[]
         {
             new SimpleCommand("tp"),
