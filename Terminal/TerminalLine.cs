@@ -9,7 +9,7 @@ namespace Terminal
         ITerminalLine Copy();
         //IEnumerable<ITerminalLine> Split(int width);
         int SplitLines(int width);
-        void WriteLine();
+        int WriteLine();
     }
     public readonly struct TerminalLine : ITerminalLine, IEquatable<TerminalLine>
     {
@@ -55,10 +55,11 @@ namespace Terminal
         }*/
         public int SplitLines(int width)
             => (Lenght - 1) / width + 1;
-        public void WriteLine()
+        public int WriteLine()
         {
             Console.ForegroundColor = Color;
             Console.Write(Line);
+            return Line.Length;
         }
     }
     public readonly struct InputLine : ITerminalLine, IEquatable<InputLine>
@@ -70,7 +71,7 @@ namespace Terminal
         public readonly ConsoleColor CursorColor;
         public readonly int CursorPosition;
 
-        public int Lenght => Prefix.Length + Line.Length + CursorPostfix.Length;
+        public int Lenght => Prefix.Length + Line.Length + (CursorPosition >= Line.Length ? CursorPostfix.Length : 0);
 
         public InputLine(string prefix, string line, string cursorPostfix, ConsoleColor color, ConsoleColor cursorColor, int cursorPosition)
         {
@@ -93,7 +94,7 @@ namespace Terminal
         public static bool operator !=(InputLine left, InputLine right) => !(left == right);
 
         public int SplitLines(int width) => (Lenght - 1) / width + 1;
-        public void WriteLine()
+        public int WriteLine()
         {
             Console.ForegroundColor = Color;
             Console.Write(Prefix);
@@ -102,6 +103,7 @@ namespace Terminal
                 Console.Write(Line);
                 Console.ForegroundColor = CursorColor;
                 Console.Write(CursorPostfix);
+                return Prefix.Length + Line.Length + CursorPostfix.Length;
             }
             else
             {
@@ -112,6 +114,7 @@ namespace Terminal
                 Console.BackgroundColor = bcg;
                 Console.ForegroundColor = Color;
                 Console.Write(Line[(CursorPosition+1)..]);
+                return Prefix.Length + Line.Length;
             }
         }
     }

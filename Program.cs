@@ -43,6 +43,10 @@ public static class Program
         terminal.WriteMessage(new TerminalMessage(ConsoleColor.Yellow, "WARN", "Current tick: " + System.DateTime.Now.Ticks));*/
         new Thread(() =>
         {
+            for (int i = 0; i < 10000; i++)
+            {
+                terminal.WriteMessage(new TerminalMessage(ConsoleColor.Yellow, "WARN", "Current tick: " + System.DateTime.Now.Ticks));
+            }
             while (true)
             {
                 terminal.WriteMessage(new TerminalMessage(ConsoleColor.Yellow, "WARN", "Current tick: " + System.DateTime.Now.Ticks));

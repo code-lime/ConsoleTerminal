@@ -1,5 +1,6 @@
 ﻿#nullable enable
 using System.Collections.Concurrent;
+using System.Text;
 
 namespace Terminal
 {
@@ -15,7 +16,7 @@ namespace Terminal
 
         protected virtual IEnumerable<ITerminalLine> GetTerminalLines()
         {
-            bool tick = DateTime.Now.Second % 2 == 0;
+            bool tick = DateTime.Now.Ticks / (TimeSpan.TicksPerSecond / 2) % 2 == 0;
             yield return new InputLine(InputPrefix, InputLine, InputCursor, ConsoleColor.White, tick ? ConsoleColor.Gray : ConsoleColor.DarkGray, InputPosition);
         }
 
@@ -25,7 +26,7 @@ namespace Terminal
             switch (info.Key)
             {
                 case ConsoleKey.RightArrow:
-                    InputPosition = Math.Min(InputLine.Length + 1, InputPosition + 1);
+                    InputPosition = Math.Min(InputLine.Length, InputPosition + 1);
                     Redraw();
                     return true;
                 case ConsoleKey.LeftArrow:
@@ -63,7 +64,7 @@ namespace Terminal
                     InputPosition = text.Length + 1;
                     return text + ch;
                 }
-                text = text.Insert(InputPosition - 1, ch.ToString());
+                text = text.Insert(InputPosition, ch.ToString());
                 InputPosition++;
                 return text;
             }
@@ -125,25 +126,43 @@ namespace Terminal
         }
         */
 
+        private List<int> cacheInput = new List<int>();
         private async Task StartOutput()
         {
             Console.CursorVisible = false;
+            Console.Write("ASDASD");
+            try
+            {
+                TextWriter writer = Console.Out;
+                System.ConsolePal.WindowsConsoleStream
+                ;
+            }
+            catch (Exception e)
+            {
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine(e.ToString());
+                Console.ResetColor();
+                Environment.Exit(998);
+            }
             while (true)
             {
                 bool draw = false;
 
                 try
                 {
+                    Console.Title = $"Top: {Console.CursorTop}";
+
                     Monitor.Enter(_lock);
                     ITerminalMessage? message = null;
                     IEnumerable<ITerminalLine> inputLines = Array.Empty<ITerminalLine>();
+                    redraw = true;
+                    int top = 0;
                     while (redraw || messages.TryDequeue(out message))
                     {
                         redraw = false;
                         if (!draw)
                         {
                             draw = true;
-
                             int width = Console.BufferWidth;
 
                             inputLines = GetTerminalLines();
@@ -151,11 +170,12 @@ namespace Terminal
                             lastInputLines.Clear();
                             lastInputLines.AddRange(inputLines);
 
-                            int top = Console.CursorTop;
+                            top = Console.CursorTop;
 
                             Console.ResetColor();
-                            Console.SetCursorPosition(0, top + 1 - lastInputHeight);
-                            Console.Write(new string(' ', width * lastInputHeight));
+                            //Console.SetCursorPosition(0, top + 1 - lastInputHeight);
+                            //Console.Write(cacheInput);
+                            //Console.Write(new string(' ', width * lastInputHeight));
                             Console.SetCursorPosition(0, top + 1 - lastInputHeight);
                         }
                         message?.WriteConsole();
@@ -163,13 +183,37 @@ namespace Terminal
                     if (draw)
                     {
                         Console.ResetColor();
-                        bool writeNewLine = false;
+                        List<int> cacheBuilder = new List<int>();
+                        int newTop = Console.CursorTop;
+                        int offset_i = newTop - top;
+                        top = newTop;
                         foreach (ITerminalLine line in inputLines)
                         {
-                            if (writeNewLine) Console.WriteLine();
-                            writeNewLine = true;
-                            line.WriteLine();
+                            int i = cacheBuilder.Count;
+                            if (i > 0) Console.WriteLine();
+                            int inLine = line.WriteLine();
+
+                            int old_i = i + offset_i;
+
+                            top = Console.CursorTop;
+                            if (cacheInput.Count > old_i && old_i >= 0)
+                            {
+                                int inOldLine = cacheInput[old_i];
+                                if (inOldLine > inLine)
+                                {
+                                    int delta = inOldLine - inLine;
+                                    Console.ResetColor();
+                                    Console.Write(new string('*', delta));
+                                }
+                            }
+                            cacheBuilder.Add(inLine);
                         }
+                        for (int i = Math.Max(0, cacheBuilder.Count + offset_i); i < cacheInput.Count; i++)
+                        {
+                            Console.Write('\n' + new string('%', cacheInput[i]));
+                        }
+                        Console.SetCursorPosition(0, top);
+                        cacheInput = cacheBuilder;
                     }
                 }
                 catch (Exception e)
@@ -183,7 +227,7 @@ namespace Terminal
                 {
                     Monitor.Exit(_lock);
                 }
-                await Task.Delay(10);
+                await Task.Delay(50);
             }
         }
 
