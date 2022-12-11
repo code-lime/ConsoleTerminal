@@ -20,6 +20,7 @@ public static class Program
 
     public static void Main(string[] args)
     {
+        Console.Write(new string('\n', 9000));
         TerminalConsole terminal = new TabTerminalConsole(new ICommand[]
         {
             new SimpleCommand("tp"),
@@ -43,10 +44,6 @@ public static class Program
         terminal.WriteMessage(new TerminalMessage(ConsoleColor.Yellow, "WARN", "Current tick: " + System.DateTime.Now.Ticks));*/
         new Thread(() =>
         {
-            for (int i = 0; i < 10000; i++)
-            {
-                terminal.WriteMessage(new TerminalMessage(ConsoleColor.Yellow, "WARN", "Current tick: " + System.DateTime.Now.Ticks));
-            }
             while (true)
             {
                 terminal.WriteMessage(new TerminalMessage(ConsoleColor.Yellow, "WARN", "Current tick: " + System.DateTime.Now.Ticks));

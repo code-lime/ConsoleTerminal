@@ -129,21 +129,6 @@ namespace Terminal
         private List<int> cacheInput = new List<int>();
         private async Task StartOutput()
         {
-            Console.CursorVisible = false;
-            Console.Write("ASDASD");
-            try
-            {
-                TextWriter writer = Console.Out;
-                System.ConsolePal.WindowsConsoleStream
-                ;
-            }
-            catch (Exception e)
-            {
-                Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine(e.ToString());
-                Console.ResetColor();
-                Environment.Exit(998);
-            }
             while (true)
             {
                 bool draw = false;
